@@ -31,3 +31,25 @@
     transform: rotate(360deg);
   }
 }
+
+.primary-button {
+  background: #0d47a1;
+  color: white;
+}
+
+.primary-button:hover {
+  cursor: pointer;
+}
+
+.delete-button {
+  background: #b00020;
+  color: white;
+}
+
+.delete-button:hover {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}

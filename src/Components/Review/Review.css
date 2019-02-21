@@ -1,0 +1,118 @@
+.review-container {
+  height: 100vh;
+  width: 100vw;
+  background: #ffb347; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #ffcc33,
+    #ffb347
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #ffcc33,
+    #ffb347
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: white;
+}
+
+.review-missing {
+  height: 100%;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-status {
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.review-missing-text {
+  font-size: 1.25rem;
+}
+
+.review-information {
+  padding: 1rem;
+}
+
+.review-expiration {
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.review-expire-date {
+  margin-left: 1rem;
+  font-weight: 600;
+}
+
+.review-content {
+  max-height: 32rem;
+  position: relative;
+  color: black;
+  background: white;
+  margin: 1rem;
+  padding: 1rem 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 1.5px 5px 0 rgba(0, 0, 0, 0.19);
+}
+
+.review-content-text {
+  max-height: 32rem;
+  overflow: auto;
+}
+
+.review-content-buttons {
+  position: absolute;
+  display: flex;
+  right: 0;
+  bottom: -1.5rem;
+  margin-right: 0.5rem;
+}
+
+.review-content-button {
+  background: white;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 1.5px 5px 0 rgba(0, 0, 0, 0.19);
+}
+
+.review-content-button:hover {
+  cursor: pointer;
+}
+
+.primary {
+  color: #0d47a1;
+}
+
+.primary:hover {
+  background: #0d47a1;
+  color: white;
+}
+
+.delete {
+  color: #b00020;
+}
+
+.delete:hover {
+  background: #b00020;
+  color: white;
+}
+
+.loading-container {
+  background: #ffb347; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #ffcc33,
+    #ffb347
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #ffcc33,
+    #ffb347
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  height: 100vh;
+  width: 100vw;
+}
