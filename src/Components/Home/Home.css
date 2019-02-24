@@ -37,7 +37,46 @@
 .home-description {
 }
 
+.home-options-container {
+  width: 20vw;
+}
+
+.home-content-container {
+  display: flex;
+  width: 100vw;
+  justify-content: space-between;
+}
+
+.home-upload-recent-container {
+  width: 20vw;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+}
+
+.home-upload-recent-title {
+  color: white;
+  font-weight: 600;
+}
+
+.home-upload-recent-content {
+  padding: 0.5rem;
+}
+
+.recent-content-item {
+  display: flex;
+  padding: 0.5rem;
+}
+
+.recent-content-link {
+  margin-right: 0.5rem;
+}
+
+.recent-content-expire {
+}
+
 .home-textinput-container {
+  width: 50vw;
   height: 20rem;
   display: flex;
   flex-flow: column;

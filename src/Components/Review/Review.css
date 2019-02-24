@@ -36,6 +36,10 @@
   padding: 1rem;
 }
 
+.review-header {
+  display: flex;
+}
+
 .review-expiration {
   font-size: 2rem;
   font-weight: 400;
@@ -44,6 +48,14 @@
 .review-expire-date {
   margin-left: 1rem;
   font-weight: 600;
+}
+
+.review-api-link {
+  display: flex;
+  margin-left: 2rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
 }
 
 .review-content {

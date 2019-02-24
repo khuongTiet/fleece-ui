@@ -13,9 +13,18 @@ export default class Home extends Component {
       expiresAt: 0,
       isCopied: false,
       isCreated: false,
+      recentContent: [],
       url: ""
     };
   }
+
+  componentDidMount = () => {
+    if (sessionStorage.getItem("fleece-recent")) {
+      this.setState({
+        recentContent: JSON.parse(sessionStorage.getItem("fleece-recent"))
+      });
+    }
+  };
 
   copyToClipboard = () => {
     const { url } = this.state;
@@ -49,15 +58,23 @@ export default class Home extends Component {
   };
 
   handleUploadContent = async () => {
-    const { content } = this.state;
+    const { content, recentContent } = this.state;
 
     if (content !== "") {
       const { data, status } = await uploadContent(this.formatData(content));
 
       if (status === 201) {
+        sessionStorage.setItem(
+          "fleece-recent",
+          JSON.stringify([
+            ...recentContent,
+            { id: data.url, expires: data.expires_at }
+          ])
+        );
         this.setState({
           expiresAt: data.expires_at,
           isCreated: true,
+          recentContent: JSON.parse(sessionStorage.getItem("fleece-recent")),
           url: data.url
         });
       }
@@ -72,7 +89,16 @@ export default class Home extends Component {
   };
 
   render() {
-    const { content, isCopied, isCreated, expiresAt, url } = this.state;
+    const {
+      content,
+      isCopied,
+      isCreated,
+      expiresAt,
+      recentContent,
+      url
+    } = this.state;
+
+    console.log(recentContent);
 
     return (
       <div className="home-container">
@@ -121,24 +147,53 @@ export default class Home extends Component {
             </div>
           </div>
         ) : (
-          <div className="home-textinput-container">
-            <div className="home-textinput-description">
-              Paste your JSON below to get a working endpoint that returns it!
+          <div className="home-content-container">
+            <div className="home-options-container" />
+            <div className="home-textinput-container">
+              <div className="home-textinput-description">
+                Paste your JSON below to get a working endpoint that returns it!
+              </div>
+              <div className="home-textinput">
+                <textarea
+                  className="home-textinput-box"
+                  value={content}
+                  onChange={e => this.handleContentChange(e)}
+                />
+              </div>
+              <div
+                className={`home-textinput-button ${
+                  content === "" ? "inactive" : ""
+                }`}
+                onClick={this.handleUploadContent}
+              >
+                Create Endpoint
+              </div>
             </div>
-            <div className="home-textinput">
-              <textarea
-                className="home-textinput-box"
-                value={content}
-                onChange={e => this.handleContentChange(e)}
-              />
-            </div>
-            <div
-              className={`home-textinput-button ${
-                content === "" ? "inactive" : ""
-              }`}
-              onClick={this.handleUploadContent}
-            >
-              Create Endpoint
+            <div className="home-upload-recent-container">
+              <div className="home-upload-recent-title">Recently stored</div>
+              <div className="home-upload-recent-content">
+                {recentContent &&
+                  recentContent.map(item => {
+                    return (
+                      <div className="recent-content-item">
+                        <div className="recent-content-link">
+                          {
+                            <Link
+                              to={{
+                                pathname: `/${item.id}`
+                              }}
+                            >
+                              {item.id}
+                            </Link>
+                          }
+                        </div>
+                        <div className="recent-content-expire">
+                          {moment.unix(item.expires).fromNow()}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         )}

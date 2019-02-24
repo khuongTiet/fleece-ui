@@ -59,12 +59,18 @@ export default class Review extends Component {
           </div>
         ) : (
           <div className="review-information">
-            <div className="review-expiration">
-              This content will expire on:
-              <span className="review-expire-date">
-                {moment.unix(expiresAt).format("hh:mm:ssA MM/DD/YYYY")}
-              </span>
+            <div className="review-header">
+              <div className="review-expiration">
+                This content will expire on:
+                <span className="review-expire-date">
+                  {moment.unix(expiresAt).format("hh:mm:ssA MM/DD/YYYY")}
+                </span>
+              </div>
+              <div className="review-api-link">{`${
+                process.env.REACT_APP_API_URL
+              }/data/api/${url}`}</div>
             </div>
+
             <div className="review-content">
               <div className="review-content-text">
                 <pre>{JSON.stringify(content, null, 4)}</pre>
