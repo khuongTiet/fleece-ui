@@ -3,6 +3,18 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import { uploadContent } from "../../utils/api";
 import "./Home.css";
+import fleeceWhite from "../../fleece-white.png";
+import InputForm from "./InputForm";
+import Results from "./Results";
+
+const Loader = props => {
+  return (
+    <div className="home-loading-container">
+      <i className="fas fa-spinner home-loader-icon rotating" />
+      <div className="home-loader-text loading">{props.text}</div>
+    </div>
+  );
+};
 
 export default class Home extends Component {
   constructor(props) {
@@ -11,8 +23,10 @@ export default class Home extends Component {
     this.state = {
       content: ``,
       expiresAt: 0,
+      hasError: false,
       isCopied: false,
       isCreated: false,
+      isUploading: false,
       recentContent: [],
       url: ""
     };
@@ -48,12 +62,29 @@ export default class Home extends Component {
   };
 
   formatData = content => {
-    return JSON.parse(content);
+    try {
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed)) {
+        return { data: parsed };
+      } else {
+        return typeof parsed === "object" ? parsed : "";
+      }
+    } catch (err) {
+      return "";
+    }
   };
 
   handleContentChange = e => {
+    const formatted = this.formatData(e.target.value);
     this.setState({
-      content: e.target.value
+      content: e.target.value,
+      hasError: formatted === "" && e.target.value !== ""
+    });
+  };
+
+  handleDeleteContent = async () => {
+    this.setState({
+      isCreated: false
     });
   };
 
@@ -61,7 +92,18 @@ export default class Home extends Component {
     const { content, recentContent } = this.state;
 
     if (content !== "") {
-      const { data, status } = await uploadContent(this.formatData(content));
+      this.setState({
+        isUploading: true
+      });
+      const formatted = this.formatData(content);
+      if (formatted === "") {
+        this.setState({
+          isUploading: false,
+          hasError: true
+        });
+        return;
+      }
+      const { data, status } = await uploadContent(formatted);
 
       if (status === 201) {
         sessionStorage.setItem(
@@ -73,7 +115,9 @@ export default class Home extends Component {
         );
         this.setState({
           expiresAt: data.expires_at,
+          hasError: false,
           isCreated: true,
+          isUploading: false,
           recentContent: JSON.parse(sessionStorage.getItem("fleece-recent")),
           url: data.url
         });
@@ -91,86 +135,51 @@ export default class Home extends Component {
   render() {
     const {
       content,
+      hasError,
       isCopied,
       isCreated,
+      isUploading,
       expiresAt,
       recentContent,
       url
     } = this.state;
-
-    console.log(recentContent);
 
     return (
       <div className="home-container">
         <div className="home-information-container">
           <div className="home-title" onClick={this.resetHome}>
             Fleece
+            <img
+              src={fleeceWhite}
+              alt="Fleece Icon"
+              className="home-fleece-icon"
+            />
           </div>
           <div className="home-description">Quick and easy mock endpoints</div>
         </div>
-        {isCreated ? (
-          <div className="home-upload-result-container">
-            <div className="home-upload-result-expires">
-              Expires:
-              <span className="home-upload-result-expiration-date">
-                {moment.unix(expiresAt).format("hh:mm:ssA MM/DD/YYYY")}
-              </span>
-            </div>
-            <div className="home-upload-result-url">
-              <div className="home-api-link">
-                <div className="home-api-link-label">
-                  Use this endpoint to get your data:
-                </div>
-                {isCopied && (
-                  <div className={`home-api-copy-modal`}>Copied!</div>
-                )}
-                <pre className="home-api-link-content">{`${
-                  process.env.REACT_APP_API_URL
-                }/data/api/${url}`}</pre>
-                <div className="home-api-copy" onClick={this.copyToClipboard}>
-                  <i className="far fa-clipboard" />
-                </div>
-              </div>
-            </div>
-            <div className="home-upload-result-buttons">
-              <Link
-                to={{
-                  pathname: `/${url}`
-                }}
-                className="home-upload-result-button primary-button"
-              >
-                Review
-              </Link>
-              <div className="home-upload-result-button delete-button">
-                Delete
-              </div>
-            </div>
-          </div>
+        {isUploading ? (
+          <Loader text={"Uploading data"} />
+        ) : isCreated ? (
+          <Results
+            copyToClipboard={this.copyToClipboard}
+            deleteContent={this.handleDeleteContent}
+            expiresAt={expiresAt}
+            isCopied={isCopied}
+            url={url}
+          />
         ) : (
           <div className="home-content-container">
             <div className="home-options-container" />
-            <div className="home-textinput-container">
-              <div className="home-textinput-description">
-                Paste your JSON below to get a working endpoint that returns it!
-              </div>
-              <div className="home-textinput">
-                <textarea
-                  className="home-textinput-box"
-                  value={content}
-                  onChange={e => this.handleContentChange(e)}
-                />
-              </div>
-              <div
-                className={`home-textinput-button ${
-                  content === "" ? "inactive" : ""
-                }`}
-                onClick={this.handleUploadContent}
-              >
-                Create Endpoint
-              </div>
-            </div>
+            <InputForm
+              hasError={hasError}
+              content={content}
+              handleContentChange={this.handleContentChange}
+              handleUploadContent={this.handleUploadContent}
+            />
             <div className="home-upload-recent-container">
-              <div className="home-upload-recent-title">Recently stored</div>
+              <div className="home-upload-recent-title">
+                {recentContent && recentContent.length > 0 && `Recently stored`}
+              </div>
               <div className="home-upload-recent-content">
                 {recentContent &&
                   recentContent.map(item => {
@@ -182,6 +191,7 @@ export default class Home extends Component {
                               to={{
                                 pathname: `/${item.id}`
                               }}
+                              className="recent-content-link-text"
                             >
                               {item.id}
                             </Link>
@@ -197,6 +207,7 @@ export default class Home extends Component {
             </div>
           </div>
         )}
+        <div className="home-footer">Made by Khuong Tiet</div>
       </div>
     );
   }
